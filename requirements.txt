@@ -1,0 +1,2 @@
+pycrpyto
+face_recognition
