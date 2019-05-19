@@ -1,2 +1,1 @@
-# ImageDetection
-An image detection project using python and raspberrypie and then generating the appropriate response using quantum keys 
+Demonstration of Qunamtum IOT at Quest lab
