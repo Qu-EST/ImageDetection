@@ -8,6 +8,7 @@ KEY_COUNT =43
 class encryptor(object):
     def __init__(self):
         self.keys = pd.read_csv('keys_binary.csv', names=['refid', 'keys'], index_col=0, dtype={1:'str'})
+        self.IV = b'EncryptionOf16By'
         
     def concat_keys(self, sample_keys):
         key=''
@@ -32,7 +33,7 @@ class encryptor(object):
         key = self.concat_keys(sample_key)
         return key
     
-    def encrypt(self, filename):
+    def encrypt_file(self, filename):
         refid, key = self.get_random_key()
         chunk_size = 64*1024
         output_file = filename+".enc"
@@ -50,9 +51,11 @@ class encryptor(object):
                     elif len(chunk) % 16 != 0:
                         chunk += ' '.encode('utf-8')*(16 - len(chunk)%16)
                         outf.write(encryptor.encrypt(chunk))
-        return refid
+        return refid, key
+
     
-    def decrypt(self, refid,  filename):
+    
+    def decrypt_file(self, refid,  filename):
         key = self.find_key(refid)
         chunk_size = 64*1024
         output_file = "decrypted_"+filename[:-4]
@@ -67,4 +70,18 @@ class encryptor(object):
                         break
                     outf.write(decryptor.decrypt(chunk))
                     outf.truncate(filesize)
+        return key
     
+
+    def encrypt_data(self, data, key):
+        encryptor = AES.new(key, AES.MODE_CBC, self.IV)
+        data = data.rjust(16, " ")
+        return encryptor.encrypt(data)
+        
+        
+        
+
+    def decrypt_data(self, enc_data, key):
+        decryptor = AES.new(key, AES.MODE_CBC, self.IV)
+        data = decryptor.decrypt(enc_data)
+        return data.strip()
