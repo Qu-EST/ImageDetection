@@ -6,7 +6,10 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QPushButton, QWidget,
                              QLabel, QVBoxLayout)              # +++
 
 from test2_ui import Ui_Form                                   # +++
-
+import requests
+import encryptor
+import csv
+import json
 class video (QtWidgets.QDialog, Ui_Form):
     def __init__(self):
         super().__init__()                  
@@ -43,12 +46,27 @@ class video (QtWidgets.QDialog, Ui_Form):
     @QtCore.pyqtSlot()
     def capture_image(self):
         flag, frame = self.cap.read()
-        path = r'clientSideCode/images/'                         # 
+        path = r'images/'                         
         if flag:
             QtWidgets.QApplication.beep()
             name = "my_image.jpg"
             cv2.imwrite(os.path.join(path, name), frame)
             self._image_counter += 1
+            self.sendRequest()
+                
+    def sendRequest(self):
+        enc = encryptor.encryptor()
+        r = requests.get(url="http://quest.phy.stevens.edu:5050/main?lower=1&higher=422&amount=1")
+        startPosition = r.json()['finalrandomarray'][0]
+        enc.encrypt_file(startPosition,r'images/'+'my_image.jpg')
+        with open(r'images/'+'my_image.jpg.enc', 'rb') as uki:
+            img = bytearray(uki.read())
+        payload = {'key':startPosition}
+        data = json.dumps(payload)
+        result = requests.post('http://127.0.0.1:5000/compare_image', data=img, headers={'Content-Type': 'application/octet-stream'})
+        result = requests.get('http://127.0.0.1:5000/compare_image',json=data, headers = {'content-type': 'application/json'})
+        print(result.text)
+
 
     def displayImage(self, img, window=True):
         qformat = QtGui.QImage.Format_Indexed8

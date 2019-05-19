@@ -40,7 +40,6 @@ def hello_world():
 
 @app.route('/compare_image', methods=['POST', 'GET'] )
 def compare_image():
-
     if(request.method=='POST'):
         image1 = request.get_data()
         with open('unknown_server.jpeg.enc', 'wb+') as uk:
@@ -49,13 +48,14 @@ def compare_image():
     else:
         refid = request.get_json()
         refid_dict = json.loads(refid)
-        print(type(refid_dict['refid']))
-        enc_key = encp.decrypt_file(refid_dict['refid'], 'unknown_server.jpeg.enc')
+        print(refid_dict['key'])
+        startPosition =refid_dict['key']
+        encp.decrypt_file(startPosition, 'unknown_server.jpeg.enc')
         uk = fr.load_image_file('decrypted_unknown_server.jpeg')
         uk = fr.face_encodings(uk)[0]
         for key, value in known_image_enc.items():
             if(fr.compare_faces([value], uk)):
-                return encp.encrypt_data(key[7:-4], enc_key)
+                return encp.encrypt_data(key[7:-4], refid_dict['key'])
         return 'unknown user'
 
 
