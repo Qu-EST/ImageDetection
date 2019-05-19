@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
 
-with open('unknown.jpg', 'rb') as uki:
+with open('Lac.jpg', 'rb') as uki:
     
     img = bytearray(uki.read())
 

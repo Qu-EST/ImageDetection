@@ -39,18 +39,16 @@ def compare_image():
     if(request.method=='POST'):
         # refid = request.args.get('refid')
         image1 = request.get_data()
-        with open('unknown_image.jpg', 'wb+') as uk:
+        with open('unknown_image.jpeg', 'wb+') as uk:
             uk.write(image1)
         return 'got data'
     else:
-        uk = fr.load_image_file('unknown_image.jpg')
+        uk = fr.load_image_file('unknown_image.jpeg')
         uk = fr.face_encodings(uk)[0]
         for key, value in known_image_enc.items():
             if(fr.compare_faces([value], uk)):
-                return key[7:-4]
-               
-        
-        return 'unknown request'
+                return key[7:-4]                       
+        return 'unknown user'
 
 
 if __name__ == '__main__':
