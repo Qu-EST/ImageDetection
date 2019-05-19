@@ -1,7 +1,7 @@
 from Crypto.Cipher import AES
 import os
 import pandas as pd
-from pandas import DataFrame
+from pandas import DataFrame as df
 
 KEY_COUNT =43
 
@@ -9,7 +9,11 @@ class encryptor(object):
     def __init__(self):
         self.keys = pd.read_csv('keys_binary.csv', names=['refid', 'keys'], index_col=0, dtype={1:'str'})
         
-        
+    def concat_keys(self, sample_keys):
+        key=''
+        for row in sample_keys.iterrows():
+            key += row[1]
+        return self.bitstring_to_bytes(key[0][:128])
     
     def bitstring_to_bytes(self, s):
         return int(s, 2).to_bytes((len(s)+7) // 8, byteorder='big')
@@ -18,13 +22,15 @@ class encryptor(object):
         '''get a random set of keys from the key pool'''
         sample_keys = self.keys.sample(KEY_COUNT)
         refid = sample_keys.index.values.tolist()
-        keys = ''
-        for row in sample_keys.iterrows():
-            keys += row[1]
-        return refid, keys[0][:128]
+        key = self.concat_keys(sample_keys)
+        return refid, key
 
     def find_key(self, refid):
-        pass
+        sample_refid = df(refid, columns=['id'])
+        sample_key = pd.merge(sample_refid, self.keys, left_on='id', right_on='refid', how='inner')
+        sample_key = sample_key.set_index('id')
+        key = self.concat_keys(sample_key)
+        return key
     
     def encrypt(self, filename):
         refid, key = self.get_random_key()
@@ -47,8 +53,9 @@ class encryptor(object):
         return refid
     
     def decrypt(self, refid,  filename):
+        key = self.find_key(refid)
         chunk_size = 64*1024
-        output_file = "decrypted"+filename[:-4]
+        output_file = "decrypted_"+filename[:-4]
         with open(filename, 'rb') as inf:
             filesize = int(inf.read(16))
             IV = inf.read(16)
