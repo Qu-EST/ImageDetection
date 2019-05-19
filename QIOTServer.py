@@ -1,12 +1,16 @@
 from flask import Flask, request
 import face_recognition as fr
 import glob
+import encryptor
+
 
 # constants
 IMAGE_PATH ='images/*.jpg'      # image folder
 
 # read all the images in the image folder
 files = glob.glob(IMAGE_PATH)
+
+encp = encryptor.encryptor()
 
 
 
@@ -36,19 +40,21 @@ def hello_world():
 @app.route('/compare_image', methods=['POST', 'GET'] )
 def compare_image():
 
-    if(request.method=='POST'):
-        # refid = request.args.get('refid')
-        image1 = request.get_data()
-        with open('unknown_image.jpeg', 'wb+') as uk:
-            uk.write(image1)
-        return 'got data'
-    else:
-        uk = fr.load_image_file('unknown_image.jpeg')
-        uk = fr.face_encodings(uk)[0]
-        for key, value in known_image_enc.items():
-            if(fr.compare_faces([value], uk)):
-                return key[7:-4]                       
-        return 'unknown user'
+    # if(request.method=='POST'):
+    #     image1 = request.get_data()
+    #     with open('unknown_server.jpeg.enc', 'wb+') as uk:
+    #         uk.write(image1)
+    #     return 'got data'
+    # else:
+    refid = request
+    return request
+        # encp.decrypt(refid, 'unknown_server.jpeg.enc')
+        # uk = fr.load_image_file('unknown_server.jpeg')
+        # uk = fr.face_encodings(uk)[0]
+        # for key, value in known_image_enc.items():
+        #     if(fr.compare_faces([value], uk)):
+        #         return key[7:-4]                       
+        # return 'unknown user'
 
 
 if __name__ == '__main__':
