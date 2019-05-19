@@ -50,12 +50,12 @@ def compare_image():
         refid = request.get_json()
         refid_dict = json.loads(refid)
         print(type(refid_dict['refid']))
-        encp.decrypt(refid_dict['refid'], 'unknown_server.jpeg.enc')
+        enc_key = encp.decrypt_file(refid_dict['refid'], 'unknown_server.jpeg.enc')
         uk = fr.load_image_file('decrypted_unknown_server.jpeg')
         uk = fr.face_encodings(uk)[0]
         for key, value in known_image_enc.items():
             if(fr.compare_faces([value], uk)):
-                return key[7:-4]                       
+                return encp.encrypt_data(key[7:-4], enc_key)
         return 'unknown user'
 
 
