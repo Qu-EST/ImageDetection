@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 from PyQt5 import QtCore, QtGui, QtWidgets                     # uic
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QPushButton, QWidget, 
-                             QLabel, QVBoxLayout)              # +++
+                             QLabel, QVBoxLayout, QMessageBox)              # +++
 
 from test2_ui import Ui_Form                                   # +++
 import requests
@@ -66,7 +66,11 @@ class video (QtWidgets.QDialog, Ui_Form):
         result = requests.post('http://quest.phy.stevens.edu:5000/compare_image', data=img, headers={'Content-Type': 'application/octet-stream'})
         result = requests.get('http://quest.phy.stevens.edu:5000/compare_image',json=data, headers = {'content-type': 'application/json'})
         name = result.text.split('.jpg')[0]
-        print(name)
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setText("Hello "+name)
+        msg.setStandardButtons(QMessageBox.Ok)
+
 
 
 
