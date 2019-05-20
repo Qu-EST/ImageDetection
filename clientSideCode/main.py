@@ -63,8 +63,8 @@ class video (QtWidgets.QDialog, Ui_Form):
             img = bytearray(uki.read())
         payload = {'key':startPosition}
         data = json.dumps(payload)
-        result = requests.post('http://127.0.0.1:5000/compare_image', data=img, headers={'Content-Type': 'application/octet-stream'})
-        result = requests.get('http://127.0.0.1:5000/compare_image',json=data, headers = {'content-type': 'application/json'})
+        result = requests.post('http://quest.phy.stevens.edu:5000/compare_image', data=img, headers={'Content-Type': 'application/octet-stream'})
+        result = requests.get('http://quest.phy.stevens.edu:5000/compare_image',json=data, headers = {'content-type': 'application/json'})
         name = result.text.split('.jpg')[0]
         print(name)
 
