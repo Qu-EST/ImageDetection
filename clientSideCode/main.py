@@ -8,13 +8,13 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QPushButton, QWidget,
 from test2_ui import Ui_Form                                   # +++
 import requests
 import encryptor
-import csv
+import RPi.GPIO as g
+import csv, time
 import json
 class video (QtWidgets.QDialog, Ui_Form):
     def __init__(self):
         super().__init__()                  
         self.toggle = True
-
 #        uic.loadUi('test2.ui',self)                           # ---
         self.setupUi(self)     
         #you need to set the customizeWindowHint first and then closeButtonhint will work
@@ -88,8 +88,15 @@ class video (QtWidgets.QDialog, Ui_Form):
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Information)
             msg.setText("Hello " + name)
-            msg.setStandardButtons(QMessageBox.Ok)
             retval = msg.exec_()
+            time.sleep(3)
+            msg.hide()
+            g.setmode(g.BOARD)
+            g.setup(31,g.OUT)
+            g.output(31,1)
+            time.sleep(5)
+            g.output(31,0)
+            g.cleanup()
         except Exception:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Information)
