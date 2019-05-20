@@ -13,9 +13,14 @@ import json
 class video (QtWidgets.QDialog, Ui_Form):
     def __init__(self):
         super().__init__()                  
+        self.toggle = True
 
 #        uic.loadUi('test2.ui',self)                           # ---
-        self.setupUi(self)                                    
+        self.setupUi(self)     
+        #you need to set the customizeWindowHint first and then closeButtonhint will work
+        self.setWindowFlags(self.windowFlags() | QtCore.Qt.CustomizeWindowHint)                               
+        self.setWindowFlags(self.windowFlags() & ~QtCore.Qt.WindowCloseButtonHint)
+
         self.capture.clicked.connect(self.capture_image)
         # self.capture.clicked.connect(self.startUIWindow)       # - ()
         self.image_label.setScaledContents(True)
@@ -26,6 +31,18 @@ class video (QtWidgets.QDialog, Ui_Form):
         #launches the webcam
         self.start_webcam()
 
+
+    def keyPressEvent(self,e):
+        if e.modifiers() & QtCore.Qt.ShiftModifier and e.modifiers() & QtCore.Qt.ControlModifier:
+            if self.toggle:
+                self.setWindowFlags(
+                    QtCore.Qt.CustomizeWindowHint |
+                    QtCore.Qt.WindowCloseButtonHint |
+                    QtCore.Qt.WindowStaysOnTopHint|
+                    QtCore.Qt.WindowMaximizeButtonHint|QtCore.Qt.WindowMinimizeButtonHint
+                    )
+                self.toggle = not self.toggle 
+                self.show()
     @QtCore.pyqtSlot()
     def start_webcam(self):
         if self.cap is None:
