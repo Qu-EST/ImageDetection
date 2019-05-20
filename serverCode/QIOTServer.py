@@ -7,17 +7,26 @@ import json
 app = Flask(__name__)
 
 # constants
-IMAGE_PATH ='../images/*.jpg'      # image folder
+# IMAGE_PATH ='../images/*.jpg'      # image folder
+files = glob.glob('training_images/*')
 # read all the images in the image folder
-files = glob.glob(IMAGE_PATH)
+training_image = {}
+
 encp = encryptor.encryptor()
 # load all the known images to a library
-known_image_enc = {}
-for each_file in files:
-    image = fr.load_image_file(each_file)
-    if(fr.face_encodings(image)):
-        image_enc = fr.face_encodings(image)[0]
-        known_image_enc[each_file] = image_enc
+# known_image_enc = {}
+# for each_file in files:
+#     image = fr.load_image_file(each_file)
+#     if(fr.face_encodings(image)):
+#         image_enc = fr.face_encodings(image)[0]
+#         known_image_enc[each_file] = image_enc
+for each_person in files:
+    image_list = glob.glob(each_person+'/*')
+    training_image[each_person] =[]
+    for each_image in image_list:
+        image = fr.load_image_file(each_image)
+        image_encoding = fr.face_encodings(image)[0]
+        training_image[each_person].append(image_encoding)
 
 def compare(unknown_image):
     pass
@@ -44,15 +53,18 @@ def compare_image():
         startPosition =refid_dict['key']
         encp.decrypt_file(startPosition, 'unknown_server.jpeg.enc')
         uk = fr.load_image_file('decrypted_unknown_server.jpeg')
+        test_image=[]
         if fr.face_encodings(uk):
-            uk = fr.face_encodings(uk,num_jitters=100)[0]
-            for key, value in known_image_enc.items():
-                if(fr.compare_faces([value], uk, tolerance=0.5)):
-                    name = key.split('/')
-                    #to check if we have keys is of structure like: ../images/SomeName.jpg
-                    if len(name)==3:
-                        fileName = name[2]
-                        return fileName
+            uk = fr.face_encodings(uk)[0]
+            for key, value in training_image.items():
+                for face_encoding in value:
+                    if(fr.compare_faces(face_encoding,uk)):
+                        print(name)
+                        name = key.split('/')
+                        #to check if we have keys is of structure like: ../images/SomeName.jpg
+                        if len(name)==3:
+                            fileName = name[2]
+                            return fileName
         return 'unknown user'
 
 

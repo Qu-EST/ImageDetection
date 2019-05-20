@@ -89,8 +89,6 @@ class video (QtWidgets.QDialog, Ui_Form):
             msg.setIcon(QMessageBox.Information)
             msg.setText("Hello " + name)
             retval = msg.exec_()
-            time.sleep(3)
-            msg.hide()
             g.setmode(g.BOARD)
             g.setup(31,g.OUT)
             g.output(31,1)
