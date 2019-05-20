@@ -18,7 +18,8 @@ class video (QtWidgets.QDialog, Ui_Form):
 #        uic.loadUi('test2.ui',self)                           # ---
         self.setupUi(self)     
         #you need to set the customizeWindowHint first and then closeButtonhint will work
-        self.setWindowFlags(self.windowFlags() | QtCore.Qt.CustomizeWindowHint)                               
+        self.setWindowFlags(self.windowFlags() | QtCore.Qt.CustomizeWindowHint)          
+        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.FramelessWindowHint)                     
         self.setWindowFlags(self.windowFlags() & ~QtCore.Qt.WindowCloseButtonHint)
 
         self.capture.clicked.connect(self.capture_image)
