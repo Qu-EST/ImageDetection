@@ -15,19 +15,18 @@ class video (QtWidgets.QDialog, Ui_Form):
         super().__init__()                  
 
 #        uic.loadUi('test2.ui',self)                           # ---
-        self.setupUi(self)                                     # +++
-
-        self.control_bt.clicked.connect(self.start_webcam)
+        self.setupUi(self)
+        self.showFullScreen()
+        self.setFixedSize(self.size())                                      
         self.capture.clicked.connect(self.capture_image)
         # self.capture.clicked.connect(self.startUIWindow)       # - ()
-
         self.image_label.setScaledContents(True)
-
         self.cap = None                                        #  -capture <-> +cap
-
         self.timer = QtCore.QTimer(self, interval=5)
         self.timer.timeout.connect(self.update_frame)
         self._image_counter = 0
+        #launches the webcam
+        self.start_webcam()
 
     @QtCore.pyqtSlot()
     def start_webcam(self):
@@ -63,16 +62,21 @@ class video (QtWidgets.QDialog, Ui_Form):
             img = bytearray(uki.read())
         payload = {'key':startPosition}
         data = json.dumps(payload)
-        result = requests.post('http://quest.phy.stevens.edu:5000/compare_image', data=img, headers={'Content-Type': 'application/octet-stream'})
-        result = requests.get('http://quest.phy.stevens.edu:5000/compare_image',json=data, headers = {'content-type': 'application/json'})
-        name = result.text.split('.jpg')[0]
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Information)
-        msg.setText("Hello "+name)
-        msg.setStandardButtons(QMessageBox.Ok)
-
-
-
+        try:
+            result = requests.post('http://quest.phy.stevens.edu:5000/compare_image', data=img, headers={'Content-Type': 'application/octet-stream'})
+            result = requests.get('http://quest.phy.stevens.edu:5000/compare_image',json=data, headers = {'content-type': 'application/json'})
+            name = result.text.split('.jpg')[0]
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Information)
+            msg.setText("Hello " + name)
+            msg.setStandardButtons(QMessageBox.Ok)
+            retval = msg.exec_()
+        except Exception:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Information)
+            msg.setText("Server down, Try again or later ")
+            msg.setStandardButtons(QMessageBox.Ok)
+            retval = msg.exec_()
 
     def displayImage(self, img, window=True):
         qformat = QtGui.QImage.Format_Indexed8
@@ -107,8 +111,6 @@ class video (QtWidgets.QDialog, Ui_Form):
 class UIWindow(QWidget):
     def __init__(self, parent=None):
         super(UIWindow, self).__init__(parent)
-
-        self.resize(300, 300)
         self.label = QLabel("Hello World", alignment=QtCore.Qt.AlignCenter)
 
         self.ToolsBTN = QPushButton('text')
@@ -124,6 +126,6 @@ if __name__=='__main__':
     import sys
     app = QtWidgets.QApplication(sys.argv)
     window = video()
-    window.setWindowTitle('main code')
+    window.setWindowTitle('Image Detection')
     window.show()
     sys.exit(app.exec_())
