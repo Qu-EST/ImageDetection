@@ -84,12 +84,17 @@ class encryptor(object):
                 outf.truncate(filesize)
     
 
-    def encrypt_data(self, data, key):
+    def encrypt_data(self, name, startPosition):
+        #to extract the name before .jpg
+        name = name.split('.jpg')[0]
+        key  = self.readCSVfile(startPosition)
         encryptor = AES.new(key, AES.MODE_CBC, self.IV)
-        data = data.rjust(16, " ")
-        return encryptor.encrypt(data)   
+        name = name.rjust(16, " ")
+        return encryptor.encrypt(name)   
 
-    def decrypt_data(self, enc_data, key):
+    def decrypt_data(self, enc_data, startPosition):
+        print('The data is ', enc_data)
+        key  = self.readCSVfile(startPosition)
         decryptor = AES.new(key, AES.MODE_CBC, self.IV)
         data = decryptor.decrypt(enc_data)
         return data.strip()

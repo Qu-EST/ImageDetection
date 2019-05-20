@@ -89,7 +89,8 @@ class encryptor(object):
         data = data.rjust(16, " ")
         return encryptor.encrypt(data)   
 
-    def decrypt_data(self, enc_data, key):
+    def decrypt_data(self, enc_data, startPosition):
+        key  = self.readCSVfile(startPosition)
         decryptor = AES.new(key, AES.MODE_CBC, self.IV)
         data = decryptor.decrypt(enc_data)
         return data.strip()

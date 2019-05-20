@@ -53,7 +53,7 @@ class video (QtWidgets.QDialog, Ui_Form):
             cv2.imwrite(os.path.join(path, name), frame)
             self._image_counter += 1
             self.sendRequest()
-                
+
     def sendRequest(self):
         enc = encryptor.encryptor()
         r = requests.get(url="http://quest.phy.stevens.edu:5050/main?lower=1&higher=422&amount=1")
@@ -65,7 +65,9 @@ class video (QtWidgets.QDialog, Ui_Form):
         data = json.dumps(payload)
         result = requests.post('http://127.0.0.1:5000/compare_image', data=img, headers={'Content-Type': 'application/octet-stream'})
         result = requests.get('http://127.0.0.1:5000/compare_image',json=data, headers = {'content-type': 'application/json'})
-        print(result.text)
+        name = result.text.split('.jpg')[0]
+        print(name)
+
 
 
     def displayImage(self, img, window=True):

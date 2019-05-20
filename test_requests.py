@@ -32,4 +32,4 @@ payload = {'key':startPosition}
 data = json.dumps(payload)
 result = requests.post('http://127.0.0.1:5000/compare_image', data=img, headers={'Content-Type': 'application/octet-stream'})
 result = requests.get('http://127.0.0.1:5000/compare_image',json=data, headers = {'content-type': 'application/json'})
-print(result.text)
+print(enc.decrypt_data(result.text,key), ' and the key is', key)
