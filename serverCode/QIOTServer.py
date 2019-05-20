@@ -25,8 +25,9 @@ for each_person in files:
     training_image[each_person] =[]
     for each_image in image_list:
         image = fr.load_image_file(each_image)
-        image_encoding = fr.face_encodings(image)[0]
-        training_image[each_person].append(image_encoding)
+        if image:
+            image_encoding = fr.face_encodings(image)[0]
+            training_image[each_person].append(image_encoding)
 
 def compare(unknown_image):
     pass
