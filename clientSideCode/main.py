@@ -44,6 +44,9 @@ class video (QtWidgets.QDialog, Ui_Form):
                     )
                 self.toggle = not self.toggle 
                 self.show()
+    def closeEvent(self,e):
+        if self.toggle:
+            e.ignore()
     @QtCore.pyqtSlot()
     def start_webcam(self):
         if self.cap is None:
