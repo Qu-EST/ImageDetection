@@ -15,9 +15,7 @@ class video (QtWidgets.QDialog, Ui_Form):
         super().__init__()                  
 
 #        uic.loadUi('test2.ui',self)                           # ---
-        self.setupUi(self)
-        self.showFullScreen()
-        self.setFixedSize(self.size())                                      
+        self.setupUi(self)                                    
         self.capture.clicked.connect(self.capture_image)
         # self.capture.clicked.connect(self.startUIWindow)       # - ()
         self.image_label.setScaledContents(True)
@@ -125,7 +123,10 @@ class UIWindow(QWidget):
 if __name__=='__main__':
     import sys
     app = QtWidgets.QApplication(sys.argv)
+    screen_resolution = app.desktop().screenGeometry()
+    width, height = screen_resolution.width(), screen_resolution.height()
     window = video()
     window.setWindowTitle('Image Detection')
+    window.setFixedSize(width,height)
     window.show()
     sys.exit(app.exec_())
