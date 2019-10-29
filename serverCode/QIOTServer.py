@@ -3,14 +3,16 @@ import face_recognition as fr
 import glob
 import encryptor
 import json
+from statistics import mode
 
 app = Flask(__name__)
 
 # constants
 # IMAGE_PATH ='../images/*.jpg'      # image folder
-files = glob.glob('training_images/*')
+files = glob.glob('../training_images/*')
 # read all the images in the image folder
 training_image = {}
+
 
 encp = encryptor.encryptor()
 # load all the known images to a library
@@ -25,19 +27,19 @@ for each_person in files:
     training_image[each_person] =[]
     for each_image in image_list:
         image = fr.load_image_file(each_image)
-        if image:
-            image_encoding = fr.face_encodings(image)[0]
-            training_image[each_person].append(image_encoding)
-
+        if image is not None:
+            try:
+                image_encoding = fr.face_encodings(image)[0]
+            except:
+                print("no face found")
+            else:
+                training_image[each_person].append(image_encoding)
 def compare(unknown_image):
     pass
-
 
 @app.route('/')
 def hello_world():
     return 'Welcome to the Quantum IOT Server!'
-
-
 
 
 @app.route('/compare_image', methods=['POST', 'GET'] )
@@ -58,14 +60,14 @@ def compare_image():
         if fr.face_encodings(uk):
             uk = fr.face_encodings(uk)[0]
             for key, value in training_image.items():
-                for face_encoding in value:
-                    if(fr.compare_faces(face_encoding,uk)):
-                        print(name)
+                # for face_encoding in value:
+                    if(mode(fr.compare_faces(value,uk))):
+                        print(key)
                         name = key.split('/')
                         #to check if we have keys is of structure like: ../images/SomeName.jpg
                         if len(name)==3:
-                            fileName = name[2]
-                            return fileName
+                            personName = name[2]
+                            return personName
         return 'unknown user'
 
 
